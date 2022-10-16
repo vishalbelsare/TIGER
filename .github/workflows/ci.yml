@@ -9,39 +9,49 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        # Run in all these versions of Python
+        python-version: [3.6, 3.7, 3.8]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
     steps:
-      - uses: actions/checkout@v2
-      - name: Install Python 3
-        uses: actions/setup-python@v1
+      # Checkout the latest code from the repo
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      # Install ffmpeg on current OS
+      - uses: FedericoCarboni/setup-ffmpeg@v1
+        id: setup-ffmpeg
+
+      # Install Python
+      - name: Install Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
         with:
-          python-version: 3.6
-      - name: Install dependencies
+          python-version: ${{ matrix.python-version }}
+
+      # Display the Python version being used
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+
+      # Install Python dependencies
+      - name: Install library dependencies
         run: |
           python -m pip install --upgrade pip
+          python setup.py install
+
+      # Display the Python version being used
+      - name: Display library versions
+        run: pip list
+
+      # Install Pytest dependencies
+      - name: Install Pytest dependencies
+        run: |
           pip install pytest
           pip install pytest-cov
           pip install pytest-github-actions-annotate-failures
-          pip install numpy
-          pip install networkx
-          pip install tqdm
-          pip install scipy
-          pip install pandas
-          pip install six
-          pip install pillow
-          pip install numba
-          pip install matplotlib
-          pip install fa2
-          pip install onnx
-          pip install PyYAML
-          pip install ipython
-          pip install stopit
-          pip install datashader
-          pip install dask
-          pip install scikit-image
-          BEZIER_NO_EXTENSION=true \
-          pip install --upgrade bezier --no-binary=bezier
 
-      - name: Run Pytests
+      # Run PyTests
+      - name: Run PyTests
         run: |
-          pytest
+          python -m pytest tests/

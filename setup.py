@@ -1,25 +1,12 @@
 import os
+import subprocess
 from setuptools import find_packages, setup
 
-install_requires = ["numpy",
-                    "networkx",
-                    "tqdm",
-                    "scipy",
-                    "pandas",
-                    "six",
-                    "pillow",
-                    "numba",
-                    "matplotlib",
-                    "fa2",
-                    "onnx",
-                    "PyYAML",
-                    "ipython",
-                    "stopit",
-                    "datashader",
-                    "dask",
-                    "scikit-image",
-                    "bezier==2020.5.19"]
+# run "git tag <version>" and then "git push origin master <version> when releasing a package to PyPi
+version = "0.2.5"
 
+subprocess.run(['pip', 'install', 'install', 'Cython', 'datashader', 'scikit-image', 'tqdm', 'stopit', 'matplotlib',
+                'networkx', 'pillow', 'fa2', 'ffmpeg-python', 'pytest'])
 
 keywords = ["data-science",
             "machine-learning",
@@ -46,21 +33,18 @@ with open(os.path.join(cwd, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-  name="graph-tiger",
-  packages=find_packages(),
-  version="0.1.5",
-  license="MIT",
-  description="A general purpose library for graph vulnerability and robustness analysis.",
-  # long_description=long_description,
-  # long_description_content_type='text/markdown',
-  author="Scott Freitas",
-  author_email="safreita1@gmail.com",
-  url="https://github.com/safreita1/TIGER",
-  download_url="https://github.com/safreita1/TIGER/archive/0.1.5.tar.gz",
-  keywords=keywords,
-  install_requires=install_requires,
-  classifiers=["Development Status :: 3 - Alpha",
-               "Intended Audience :: Developers",
-               "License :: OSI Approved :: MIT License",
-               "Programming Language :: Python :: 3.6"],
+    name="graph-tiger",
+    packages=find_packages(),
+    version=version,
+    license="MIT",
+    description="A general purpose library for graph vulnerability and robustness analysis.",
+    author="Scott Freitas",
+    author_email="safreita1@gmail.com",
+    url="https://github.com/safreita1/TIGER",
+    download_url="https://github.com/safreita1/TIGER/archive/{}.tar.gz".format(version),
+    keywords=keywords,
+    classifiers=["Development Status :: 3 - Alpha",
+                 "Intended Audience :: Developers",
+                 "License :: OSI Approved :: MIT License",
+                 "Programming Language :: Python :: 3.8"],
 )

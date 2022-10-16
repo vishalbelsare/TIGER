@@ -1,5 +1,6 @@
 import os
 import random
+import platform
 import numpy as np
 import pandas as pd
 import networkx as nx
@@ -8,11 +9,10 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 from scipy.interpolate import interp1d
 from datashader.bundling import hammer_bundle
-from matplotlib.animation import FuncAnimation
-from matplotlib.collections import LineCollection
+from matplotlib import animation
 from matplotlib.colors import LinearSegmentedColormap
 
-from graph_tiger.utils import get_sparse_graph, curved_edges
+from graph_tiger.utils import get_sparse_graph
 
 
 class Simulation:
@@ -121,7 +121,7 @@ class Simulation:
         plt.xlabel('Steps')
         plt.title(self.child_class())
         plt.savefig(os.path.join(self.save_dir, self.get_plot_title(self.prm['steps']) + '_results.pdf'))
-        plt.show()
+        # plt.show()
 
         plt.clf()
 
@@ -133,16 +133,16 @@ class Simulation:
         :return: title string
         """
         if self.child_class() == 'Diffusion':
-            title = '{}_epidemic:step={},diffusion={},method={},k={}'.format(self.prm['model'], step, self.prm['diffusion'], self.prm['method'], self.prm['k'])
+            title = '{}_epidemic--step={},diffusion={},method={},k={}'.format(self.prm['model'], step, self.prm['diffusion'], self.prm['method'], self.prm['k'])
 
         elif self.child_class() == 'Cascading':
-            title = 'Cascading:step={},l={},r={},k_a={},attack={},k_d={},defense={}'.format(step, self.prm['l'], self.prm['r'], self.prm['k_a'],
+            title = 'Cascading--step={},l={},r={},k_a={},attack={},k_d={},defense={}'.format(step, self.prm['l'], self.prm['r'], self.prm['k_a'],
                                                                                             self.prm['attack'], self.prm['k_d'], self.prm['defense'])
         elif self.child_class() == 'Attack':
-            title = 'Attack:step={},attack={},k_d={},defense={}'.format(step, self.prm['attack'], self.prm['k_d'], self.prm['defense'])
+            title = 'Attack--step={},attack={},k_d={},defense={}'.format(step, self.prm['attack'], self.prm['k_d'], self.prm['defense'])
 
         elif self.child_class() == 'Defense':
-            title = 'Defense:step={},attack={},k_a={},defense={}'.format(step, self.prm['attack'], self.prm['k_a'], self.prm['defense'])
+            title = 'Defense--step={},attack={},k_a={},defense={}'.format(step, self.prm['attack'], self.prm['k_a'], self.prm['defense'])
 
         else:
             title = ''
@@ -229,10 +229,7 @@ class Simulation:
         """
         nc, ns, ec, ew, cmap = self.get_visual_settings(step)
 
-        if self.prm['edge_style'] == 'curved':
-            plt.gca().add_collection(LineCollection(curved_edges(self.graph, self.node_pos), linewidth=ew, color=ec))
-
-        elif self.prm['edge_style'] == 'bundled':
+        if self.prm['edge_style'] == 'bundled':
             plt.plot(self.edge_pos.x, self.edge_pos.y, zorder=1, linewidth=ew, color=ec)
 
         else:
@@ -248,16 +245,17 @@ class Simulation:
 
         :param step: current iteration of the simulation
         """
-        plt.figure(figsize=(20, 20))
+        fig = plt.figure(figsize=(20, 20))
 
         self.draw_graph(step)
 
         plt.axis('image')
         title = self.get_plot_title(step)
         plt.savefig(os.path.join(self.save_dir, title + '.pdf'))
-        plt.show()
-
+        # plt.show()
         plt.clf()
+        # plt.close(fig)
+
 
     def create_simulation_gif(self):
         """
@@ -266,9 +264,6 @@ class Simulation:
         fig = plt.figure(figsize=(20, 20))
         nodes = self.draw_graph(step=0)
 
-        snap_dir = os.path.join(self.save_dir, 'gif_snaps/')
-        os.makedirs(snap_dir, exist_ok=True)
-
         def update(step):
             nc, ns, _, _, _ = self.get_visual_settings(step)
 
@@ -276,6 +271,9 @@ class Simulation:
             nodes.set_sizes(ns)
 
             if self.prm['gif_snaps']:
+                snap_dir = os.path.join(self.save_dir, 'gif_snaps/')
+                os.makedirs(snap_dir, exist_ok=True)
+
                 plt.savefig(snap_dir + 'step_{}.pdf'.format(step))
 
             return nodes,
@@ -293,11 +291,15 @@ class Simulation:
             interval = 20
             fps = 1
 
-        anim = FuncAnimation(fig, update, frames=frames, interval=interval, blit=not self.prm['gif_snaps'], repeat=False)
+        if platform.system() != 'Windows':
+            anim = animation.FuncAnimation(fig, update, frames=frames, interval=interval, blit=not self.prm['gif_snaps'], repeat=False)
+            writer = animation.FFMpegWriter(fps=fps, extra_args=['-vcodec', 'libx264'])
 
-        title = self.get_plot_title(self.prm['steps'])
-        gif_path = os.path.join(self.save_dir, title + '.mp4')
-        anim.save(gif_path, fps=fps, extra_args=['-vcodec', 'libx264'])
+            title = self.get_plot_title(self.prm['steps'])
+            gif_path = os.path.join(self.save_dir, title + '.mp4')
+            anim.save(gif_path, writer=writer)
+        else:
+            print('Warning: Animated video functionality not supported on Windows; snapshot images are available.')
 
         plt.clf()
 

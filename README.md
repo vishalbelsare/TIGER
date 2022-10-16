@@ -1,5 +1,7 @@
 [![Run Python Tests](https://github.com/safreita1/TIGER/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/safreita1/TIGER/actions/workflows/ci.yml)
 ![Version](https://img.shields.io/pypi/v/graph-tiger?color=dark)
+[![Python 3](https://img.shields.io/badge/python-3.6|3.7|3.8-blue.svg)](https://www.python.org/downloads/release/python-360/)
+[![Python 3](https://img.shields.io/badge/OS-Ubuntu|Mac|Windows-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Documentation Status](https://readthedocs.org/projects/graph-tiger/badge/?version=latest)](https://graph-tiger.readthedocs.io/en/latest/?badge=latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![arXiv](https://img.shields.io/badge/arXiv-2006.05648-<COLOR>.svg)](https://arxiv.org/pdf/2006.05648.pdf)
@@ -9,7 +11,7 @@
 
 **TIGER** is a Python toolbox to conduct graph vulnerability and robustness research. TIGER contains numerous 
 state-of-the-art methods to help users conduct graph vulnerability and robustness analysis on graph structured data.
-Specifically, TIGER helps users:
+Specifically, TIGER helps users: 
 
 1. **Quantify** network *vulnerability* and *robustness*, 
 2. **Simulate** a variety of network attacks, cascading failures and spread of dissemination of entities
@@ -37,8 +39,10 @@ To quickly get started, install TIGER using pip
 $ pip install graph-tiger
 ``` 
 
-Alternatively, you can clone [TIGER](https://github.com/safreita1/TIGER.git) and create a new Anaconda environment 
-using the [YAML](environment.yml) file.
+Alternatively, you can clone [TIGER](https://github.com/safreita1/TIGER.git), create a new Anaconda environment,
+and install the library by running ```python setup.py install```.
+
+To verify that everything works as expected, you can run the tests cases using ```python -m pytest tests/```.
 
 --------------------------------------------------------------------------------
 

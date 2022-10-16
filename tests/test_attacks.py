@@ -26,7 +26,7 @@ def test_method_selection():
     """
 
     ground_truth = {  # karate graph top 4 nodes to be removed
-        'ns_node': [33, 0, 2, 32],
+        'ns_node': ([33, 0, 2, 32], [33, 2, 0, 32]),
         'pr_node': [33, 0, 32, 2],
         'eig_node': [33, 0, 2, 32],
         'id_node': [33, 0, 32, 2],
@@ -53,10 +53,10 @@ def test_method_selection():
         values = run_attack_method(graph, method=method, k=k, seed=1)
 
         # print(method, values)
-        if 'rnd' not in method and method != 'ib_edge':
-            assert (values == ground_truth[method])
-        elif method == 'ib_edge':
-            assert (values == ground_truth[method][0] or values == ground_truth[method][1])
+        if 'rnd' not in method and method != 'ib_edge' and method != 'ns_node':
+            assert values == ground_truth[method]
+        elif method == 'ib_edge' or method == 'ns_node':
+            assert values == ground_truth[method][0] or values == ground_truth[method][1]
 
 
 def main():
